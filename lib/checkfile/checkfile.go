@@ -1,7 +1,6 @@
 package checkfile
 
 import (
-	"io/fs"
 	"os"
 )
 
