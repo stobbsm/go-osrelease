@@ -2,6 +2,7 @@ package osrelease
 
 // constants of os-release official entries
 const (
+	// Official fields
 	NAME               = "NAME"
 	ID                 = "ID"
 	ID_LIKE            = "ID_LIKE"
@@ -32,4 +33,8 @@ const (
 	SYSEXT_SCOPE       = "SYSEXT_SCOPE"
 	CONFEXT_SCOPE      = "CONFEXT_SCOPE"
 	PORTABLE_PREFIXES  = "PORTABLE_PREFIXES"
+
+	// File paths to check
+	ETC_OS_RELEASE     = `/etc/os-release`
+	USR_LIB_OS_RELEASE = `/usr/lib/os-release`
 )

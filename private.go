@@ -9,11 +9,6 @@ import (
 	"github.com/stobbsm/go-osrelease/lib/checkfile"
 )
 
-const (
-	ETC_OS_RELEASE     = `/etc/os-release`
-	USR_LIB_OS_RELEASE = `/usr/lib/os-release`
-)
-
 // set sets the given key to the given value
 // if the key has an official entry in the standard
 // it is set with a named struct entry,
@@ -28,7 +23,8 @@ func (i *OsRelease) set(key, value string) bool {
 		i.id = value
 		return true
 	case ID_LIKE:
-		i.idLike = value
+		i.idLike_raw = value
+		i.idLike = parseLike(value)
 		return true
 	case PRETTY_NAME:
 		i.prettyName = value
@@ -127,7 +123,7 @@ func (i *OsRelease) get(key string, officialOnly bool) (string, error) {
 	case ID:
 		return i.id, nil
 	case ID_LIKE:
-		return i.idLike, nil
+		return i.idLike_raw, nil
 	case PRETTY_NAME:
 		return i.prettyName, nil
 	case CPE_NAME:
@@ -289,4 +285,15 @@ func parseLine(line string) (string, string, error) {
 	value = strings.Replace(value, "\\`", "`", -1)
 
 	return key, value, nil
+}
+
+// parseLike takes the space separated list of 'alike'
+// distributions (parents like rhel, debian, etc) and
+// puts them into an easy to use map
+func parseLike(like string) map[string]struct{} {
+	m := make(map[string]struct{})
+	for _, v := range strings.Split(like, " ") {
+		m[v] = struct{}{}
+	}
+	return m
 }

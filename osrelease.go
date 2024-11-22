@@ -1,12 +1,15 @@
 package osrelease
 
-import "os"
+import (
+	"os"
+)
 
 // OsRelease uses the standard defined by [https://www.freedesktop.org/software/systemd/man/latest/os-release.html]
 type OsRelease struct {
 	name             string
 	id               string
-	idLike           string
+	idLike           map[string]struct{}
+	idLike_raw       string
 	prettyName       string
 	cpeName          string
 	variant          string
@@ -96,4 +99,15 @@ func (i *OsRelease) GetUnknown(key string) string {
 // an empty string and an error
 func (i *OsRelease) GetAny(key string) (string, error) {
 	return i.get(key, false)
+}
+
+// Like returns true if any of the given values are in 'ID_LIKE'
+func (i *OsRelease) Like(dname ...string) bool {
+	for _, v := range dname {
+		_, ok := i.idLike[v]
+		if ok {
+			return ok
+		}
+	}
+	return false
 }
