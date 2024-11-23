@@ -26,39 +26,3 @@ func Exists(filename string) bool {
 	}
 	return true
 }
-
-// SizeLess checks the given files reported size
-// against the given size.
-// If the files size is less then the given size, return true
-// return false if the file cannot be read, or size is larger
-func SizeLess(filename string, size int64) bool {
-	fstat, err := os.Stat(filename)
-	if err != nil {
-		return false
-	}
-	return fstat.Size() < size
-}
-
-// SizeGreater checks the given files reported size
-// against the given size.
-// If the files size is greater then the given size,
-// return true.
-func SizeGreater(filename string, size int64) bool {
-	fstat, err := os.Stat(filename)
-	if err != nil {
-		return false
-	}
-	return fstat.Size() > size
-}
-
-// SizeEqual checks the given files reported size
-// against the given size.
-// If the sizes are equal, return true. Everything
-// else returns false
-func SizeEqual(filename string, size int64) bool {
-	fstat, err := os.Stat(filename)
-	if err != nil {
-		return false
-	}
-	return fstat.Size() == size
-}
