@@ -38,3 +38,14 @@ const (
 	ETC_OS_RELEASE     = `/etc/os-release`
 	USR_LIB_OS_RELEASE = `/usr/lib/os-release`
 )
+
+// Names to match in IsLike to determine what is compatible
+const (
+	ARCH     = `arch`
+	DEBIAN   = `debian`
+	FEDORA   = `fedora`
+	OPENSUSE = `opensuse`
+	RHEL     = `rhel`
+	SUSE     = `suse`
+	UBUNTU   = `ubuntu`
+)
