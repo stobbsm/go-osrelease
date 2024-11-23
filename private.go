@@ -23,8 +23,7 @@ func (i *OsRelease) set(key, value string) bool {
 		i.id = value
 		return true
 	case ID_LIKE:
-		i.idLike_raw = value
-		i.idLike = parseLike(value)
+		i.idLike = value
 		return true
 	case PRETTY_NAME:
 		i.prettyName = value
@@ -123,7 +122,7 @@ func (i *OsRelease) get(key string, officialOnly bool) (string, error) {
 	case ID:
 		return i.id, nil
 	case ID_LIKE:
-		return i.idLike_raw, nil
+		return i.idLike, nil
 	case PRETTY_NAME:
 		return i.prettyName, nil
 	case CPE_NAME:

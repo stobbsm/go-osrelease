@@ -2,14 +2,14 @@ package osrelease
 
 import (
 	"os"
+	"strings"
 )
 
 // OsRelease uses the standard defined by [https://www.freedesktop.org/software/systemd/man/latest/os-release.html]
 type OsRelease struct {
 	name             string
 	id               string
-	idLike           map[string]struct{}
-	idLike_raw       string
+	idLike           string
 	prettyName       string
 	cpeName          string
 	variant          string
@@ -93,21 +93,54 @@ func (i *OsRelease) GetUnknown(key string) string {
 	return ""
 }
 
-// GetAny returns the specified value defined by the given key.
+// Get returns the specified value defined by the given key
 // This method checks official and unknown keys
 // Returns the found value and nil; or
 // an empty string and an error
-func (i *OsRelease) GetAny(key string) (string, error) {
+func (i *OsRelease) Get(key string) (string, error) {
 	return i.get(key, false)
 }
 
-// Like returns true if any of the given values are in 'ID_LIKE'
-func (i *OsRelease) Like(dname ...string) bool {
-	for _, v := range dname {
-		_, ok := i.idLike[v]
-		if ok {
-			return ok
-		}
-	}
-	return false
+// IsLike returns true if any of the given values are in 'ID_LIKE'
+func (i *OsRelease) IsLike(name string) bool {
+	return strings.Contains(i.idLike, name)
 }
+
+// Pretty access methods, to access things that are considered
+// the "pretty" version of the more programmatic ones
+
+// Pretty returns the value of PRETTY_NAME
+func (i *OsRelease) Pretty() string { return i.prettyName }
+
+// PrettyVariant returns the value of VARIANT
+func (i *OsRelease) PrettyVariant() string { return i.variant }
+
+// PrettyVersion returns the value of VERSION
+func (i *OsRelease) PrettyVersion() string { return i.version }
+
+// Name returns the value of NAME
+func (i *OsRelease) Name() string { return i.name }
+
+// Id returns the value of ID
+func (i *OsRelease) Id() string { return i.id }
+
+// Version returns the value of VERSION_ID
+func (i *OsRelease) Version() string { return i.versionId }
+
+// Codename returns the value of VERSION_CODENAME
+func (i *OsRelease) Codename() string { return i.versionCodename }
+
+// Variant returns the value of VARIANT_ID
+func (i *OsRelease) Variant() string { return i.variantId }
+
+// BuildId returns the value of BUILD_ID
+func (i *OsRelease) BuildId() string { return i.buildId }
+
+// Arch returns the value of ARCHITECTURE
+func (i *OsRelease) Arch() string { return i.architecture }
+
+// ImageId returns the value of IMAGE_ID
+func (i *OsRelease) ImageId() string { return i.imageId }
+
+// ImageVersion returns the value of IMAGE_VERSION
+func (i *OsRelease) ImageVersion() string { return i.imageVersion }
