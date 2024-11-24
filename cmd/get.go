@@ -34,6 +34,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/stobbsm/go-osrelease/lib/osrelease"
 )
 
 // getCmd represents the get command
@@ -43,7 +45,12 @@ var getCmd = &cobra.Command{
 	Long: `get <var_name>
 	get the value of a given variable, or an empty string if not set`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("get called")
+		viper.Set("shell", true)
+		if len(args) > 0 {
+			fmt.Printf("arg[0] = %v\n", args[0])
+		} else {
+			osrelease.PrintSet()
+		}
 	},
 }
 

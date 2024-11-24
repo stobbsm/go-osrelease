@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+const SUPPORTED_SYSTEMD_VERSION = 256
+
 // OsRelease uses the standard defined by [https://www.freedesktop.org/software/systemd/man/latest/os-release.html]
 type OsRelease struct {
 	name             string
