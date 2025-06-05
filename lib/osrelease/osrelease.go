@@ -2,6 +2,7 @@ package osrelease
 
 import (
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ const SUPPORTED_SYSTEMD_VERSION = 256
 type OsRelease struct {
 	name             string
 	id               string
-	idLike           string
+	idLike           []string
 	prettyName       string
 	cpeName          string
 	variant          string
@@ -57,12 +58,12 @@ func NewOsInfo() *OsRelease {
 
 // FromFile sets the readFrom attribute.
 // Panics if the given file can't be opened/doesn't exist
-func (i *OsRelease) FromFile(filename string) *OsRelease {
+func (i *OsRelease) FromFile(filename string) (*OsRelease, error) {
 	if _, err := os.Stat(filename); err != nil {
-		panic(err)
+		return nil, err
 	}
 	i.readFrom = filename
-	return i
+	return i, i.load()
 }
 
 // Load reads and parses the os-release file
@@ -105,7 +106,7 @@ func (i *OsRelease) Get(key string) (string, error) {
 
 // IsLike returns true if any of the given values are in 'ID_LIKE'
 func (i *OsRelease) IsLike(name string) bool {
-	return strings.Contains(i.idLike, name)
+	return slices.Contains(i.idLike, name)
 }
 
 // Pretty access methods, to access things that are considered

@@ -3,6 +3,7 @@ package osrelease
 import (
 	"bufio"
 	"errors"
+	"iter"
 	"os"
 	"strings"
 
@@ -23,7 +24,7 @@ func (i *OsRelease) set(key, value string) bool {
 		i.id = value
 		return true
 	case ID_LIKE:
-		i.idLike = value
+		i.idLike = strings.Split(value, " ")
 		return true
 	case PRETTY_NAME:
 		i.prettyName = value
@@ -122,7 +123,7 @@ func (i *OsRelease) get(key string, officialOnly bool) (string, error) {
 	case ID:
 		return i.id, nil
 	case ID_LIKE:
-		return i.idLike, nil
+		return strings.Join(i.idLike, " "), nil
 	case PRETTY_NAME:
 		return i.prettyName, nil
 	case CPE_NAME:
@@ -199,7 +200,7 @@ func (i *OsRelease) load() error {
 		} else if checkfile.Exists(USR_LIB_OS_RELEASE) {
 			i.readFrom = USR_LIB_OS_RELEASE
 		} else {
-			panic(errors.New("unable to read os-release from any given file"))
+			return errors.New("unable to read os-release from any given file")
 		}
 	}
 	return i.loadFile(i.readFrom)
@@ -209,44 +210,36 @@ func (i *OsRelease) load() error {
 // them info an OsInfo struct, containing the parsed details
 // identifying the OS in use
 func (i *OsRelease) loadFile(filename string) error {
-	var lines []string
+	var k, v string
 	var err error
 
-	lines, err = readFile(filename)
-	if err != nil {
-		return err
-	}
-
-	for _, l := range lines {
-		k, v, err := parseLine(l)
-		if err != nil {
-			// errors here are not considered fatal, skip and parse the next line
-			continue
+	if checkfile.Readable(filename) {
+		for s := range i.readFile(filename) {
+			k, v, err = parseLine(s)
+			if err != nil {
+				continue
+			}
+			i.Set(k, v)
 		}
-		i.Set(k, v)
+		return nil
 	}
-
-	return nil
+	return errors.Join(errors.New("Can't open file"), errors.New(filename))
 }
 
 // readFile reads the contents of the given file and returns
-// a slice of the lines read
-func readFile(filename string) ([]string, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	defer file.Close()
-
+// an iterator of the read lines
+func (i *OsRelease) readFile(filename string) iter.Seq[string] {
+	file, _ := os.Open(filename)
 	scanner := bufio.NewScanner(file)
-	var lines []string
 
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+	return func(yield func(string) bool) {
+		defer file.Close()
+		for scanner.Scan() {
+			if !yield(scanner.Text()) {
+				return
+			}
+		}
 	}
-
-	return lines, scanner.Err()
 }
 
 // parseLinux takes a line extracted by readFile
